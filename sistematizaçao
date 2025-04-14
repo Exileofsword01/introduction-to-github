@@ -1,0 +1,172 @@
+ import java.util.Scanner; 
+  
+// Classe ContactManager: ponto de entrada da aplicação e interação com o usuário 
+public class ContactManager { 
+    public static void main(String[] args) { 
+        Scanner scanner = new Scanner(System.in); 
+        ContactList contactList = new ContactList(); 
+  
+        while (true) { 
+            System.out.println("\n--- Sistema de Gerenciamento de Contatos ---"); 
+            System.out.println("1. Adicionar Contato"); 
+            System.out.println("2. Buscar Contato"); 
+            System.out.println("3. Remover Contato"); 
+            System.out.println("4. Listar Contatos"); 
+            System.out.println("5. Sair"); 
+            System.out.print("Escolha uma opção: "); 
+  
+            // Lê toda a linha e tenta converter para inteiro 
+            String opcaoStr = scanner.nextLine(); 
+            int opcao; 
+            try { 
+                opcao = Integer.parseInt(opcaoStr); 
+            } catch (NumberFormatException e) { 
+                System.out.println("Entrada inválida. Por favor, digite um número."); 
+                continue; 
+            } 
+             
+            switch (opcao) { 
+                case 1: 
+                    System.out.print("Nome: "); 
+                    String nome = scanner.nextLine(); 
+                    System.out.print("Telefone: "); 
+                    String telefone = scanner.nextLine(); 
+                    System.out.print("Email: "); 
+                    String email = scanner.nextLine(); 
+                    contactList.addContact(new Contact(nome, telefone, email)); 
+                    System.out.println("Contato adicionado com sucesso!"); 
+                    break; 
+                case 2: 
+                    System.out.print("Digite o nome ou telefone para buscar: "); 
+                    String busca = scanner.nextLine(); 
+                    Contact resultado = contactList.searchContact(busca); 
+                    if (resultado != null) { 
+                        System.out.println("Contato encontrado: " + resultado); 
+                    } else { 
+                        System.out.println("Contato não encontrado."); 
+                    } 
+                    break; 
+                case 3: 
+                    System.out.print("Digite o nome ou telefone para remover: "); 
+                    String remover = scanner.nextLine(); 
+                    boolean removido = contactList.removeContact(remover); 
+                    if (removido) { 
+                        System.out.println("Contato removido com sucesso."); 
+                    } else { 
+                        System.out.println("Contato não encontrado para remoção."); 
+                    } 
+                    break; 
+                case 4: 
+                    contactList.listContacts(); 
+                    break; 
+                case 5: 
+                    System.out.println("Encerrando o sistema."); 
+                    scanner.close(); 
+                    return; 
+                default: 
+                    System.out.println("Opção inválida, tente novamente."); 
+            } 
+        } 
+    } 
+} 
+ // Classe Node: representa um nó na lista encadeada 
+class Node { 
+    Contact contact; 
+    Node next; 
+  
+    public Node(Contact contact) { 
+        this.contact = contact; 
+        this.next = null; 
+    } 
+} 
+// Classe Contact: representa um contato individual 
+public class Contact { 
+    private String name; 
+    private String phoneNumber; 
+    private String email; 
+  
+    public Contact(String name, String phoneNumber, String email) { 
+        this.name = name; 
+        this.phoneNumber = phoneNumber; 
+        this.email = email; 
+    } 
+  
+    public String getName() { 
+        return name; 
+    } 
+  
+    public String getPhoneNumber() { 
+        return phoneNumber; 
+    } 
+  
+    public String getEmail() { 
+        return email; 
+    } 
+  
+    @Override 
+    public String toString() { 
+        return "Nome: " + name + ", Telefone: " + phoneNumber + ", Email: " + email; 
+    } 
+} 
+ // Classe ContactList: gerencia a lista encadeada de contatos 
+class ContactList { 
+    private Node head; 
+  
+    public void addContact(Contact contact) { 
+        Node newNode = new Node(contact); 
+        if (head == null) { 
+            head = newNode; 
+        } else { 
+            Node current = head; 
+            while (current.next != null) { 
+                current = current.next; 
+            } 
+            current.next = newNode; 
+        } 
+    } 
+  
+    public Contact searchContact(String keyword) { 
+        Node current = head; 
+        while (current != null) { 
+            if (current.contact.getName().equalsIgnoreCase(keyword) || 
+                current.contact.getPhoneNumber().equalsIgnoreCase(keyword)) { 
+                return current.contact; 
+            } 
+            current = current.next; 
+        } 
+        return null; 
+    } 
+  
+    public boolean removeContact(String keyword) { 
+        if (head == null) return false; 
+  
+        if (head.contact.getName().equalsIgnoreCase(keyword) || 
+            head.contact.getPhoneNumber().equalsIgnoreCase(keyword)) { 
+            head = head.next; 
+            return true; 
+        } 
+  
+        Node current = head; 
+        while (current.next != null) { 
+            if (current.next.contact.getName().equalsIgnoreCase(keyword) || 
+                current.next.contact.getPhoneNumber().equalsIgnoreCase(keyword)) { 
+                current.next = current.next.next; 
+                return true; 
+            } 
+            current = current.next; 
+        } 
+        return false; 
+    } 
+  
+    public void listContacts() { 
+        if (head == null) { 
+            System.out.println("Nenhum contato cadastrado."); 
+            return; 
+        } 
+        Node current = head; 
+        while (current != null) { 
+            System.out.println(current.contact); 
+            current = current.next; 
+        } 
+    } 
+}
